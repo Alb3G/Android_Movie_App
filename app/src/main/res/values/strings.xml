@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">UDP6_Android</string>
+    <string name="login_title">MyMovieShelf</string>
+    <string name="movie_poster">Poster of the movie to display</string>
+    <string name="clear_movies">Clear Movies</string>
+    <string name="load_movies">Load Movies</string>
+    <string name="detail_input_text" />
+    <string name="edit_button_detail_label">Edit</string>
+    <string name="cancel_detail_button_label">Cancel</string>
+    <string name="close_dialog_option">Close</string>
+    <string name="accept_dialog_option">Accept</string>
+    <string name="movie_desc">%1$s</string>
+    <string name="movie_title">Title</string>
+    <string name="movie_year">%1$d</string>
+    <string name="movie_duration">%1$d</string>
+    <string name="movie_country">%1$s</string>
+    <string name="log_in">Log In</string>
+    <string name="example_gmail_com">example@gmail.com</string>
+    <string name="password">Password</string>
+    <string name="email_address">Email Address</string>
+    <string name="remember_user">Remember User</string>
+    <string name="email">Email</string>
+    <string name="description">Description:</string>
+    <string name="year">Year:</string>
+    <string name="duration">Duration:</string>
+    <string name="country">Country:</string>
+    <string name="movies">Movies</string>
+</resources>
