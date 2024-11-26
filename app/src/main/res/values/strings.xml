@@ -25,4 +25,5 @@
     <string name="duration">Duration:</string>
     <string name="country">Country:</string>
     <string name="movies">Movies</string>
+    <string name="title_activity_maps">MapsActivity</string>
 </resources>
