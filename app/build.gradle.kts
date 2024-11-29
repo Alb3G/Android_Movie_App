@@ -4,6 +4,13 @@ plugins {
     alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
 }
 
+secrets {
+    // Provide a properties file with default values for secrets
+    defaultPropertiesFileName = "secrets.properties"
+    // Ignore all keys matching regex "sdk.*"
+    ignoreList.add("sdk.*")
+}
+
 android {
     namespace = "com.example.udp6_android"
     compileSdk = 34
@@ -14,6 +21,8 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+
+        buildConfigField("String", "GMP_KEY", "${project.properties["GMP_KEY"]}")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -39,6 +48,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 

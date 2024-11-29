@@ -3,8 +3,11 @@ package com.example.udp6_android
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.example.udp6_android.contracts.CinemaContract
 import com.example.udp6_android.contracts.MovieContract
+import com.example.udp6_android.model.Cinema
 import com.example.udp6_android.model.Movie
+import com.example.udp6_android.model.City
 
 class DBOpenHelper private constructor(context: Context?):
     SQLiteOpenHelper(context, MovieContract.DB_NAME, null, MovieContract.VERSION)
@@ -29,6 +32,14 @@ class DBOpenHelper private constructor(context: Context?):
                         "${MovieContract.Companion.Entry.RELEASE_YEAR} INTEGER, " +
                         "${MovieContract.Companion.Entry.COUNTRY} TEXT);"
             )
+            db.execSQL("CREATE TABLE ${CinemaContract.Entry.TABLE}(" +
+                    "${CinemaContract.Entry.ID} INTEGER, " +
+                    "${CinemaContract.Entry.NAME} VARCHAR, " +
+                    "${CinemaContract.Entry.CITY} VARCHAR, " +
+                    "${CinemaContract.Entry.LATITUDE} REAL, " +
+                    "${CinemaContract.Entry.LONGITUDE} REAL);"
+            )
+            db.execSQL("CREATE TABLE Movie_Cinema(movie_id INTEGER, cinema_id INTEGER);")
             initializeDb(db)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -45,17 +56,67 @@ class DBOpenHelper private constructor(context: Context?):
     }
 
     private fun initializeDb(db: SQLiteDatabase) {
-        val list = loadMovies()
-        for(movie in list) {
-            db.execSQL("INSERT INTO ${MovieContract.Companion.Entry.TABLE} (" +
+        val cinemas = loadCinemas()
+        val movies = loadMovies()
+        val cinemaGeneratedIds = mutableSetOf<Int>()
+        cinemas.forEach {
+            insertCinema(db, it)
+        }
+        for(movie in movies) {
+            insertMovie(db, movie)
+            repeat(2) {
+                insertMovieCinemaRegistry(cinemaGeneratedIds, db, movie)
+            }
+        }
+    }
+
+    private fun insertMovieCinemaRegistry(
+        cinemaGeneratedIds: MutableSet<Int>,
+        db: SQLiteDatabase,
+        movie: Movie,
+    ) {
+        var randId: Int
+        var attempts = 0
+        do {
+            randId = getRandomCinemaId()
+            attempts++
+        } while (randId in cinemaGeneratedIds && attempts < 10)
+        if (attempts < 10) {
+            cinemaGeneratedIds.add(randId)
+            db.execSQL("INSERT INTO Movie_Cinema(movie_id, cinema_id) values (${movie.id}, ${randId});")
+        } else {
+            println("Could not find a unique cinema ID for movie ${movie.id}")
+        }
+    }
+
+    private fun insertMovie(
+        db: SQLiteDatabase,
+        movie: Movie,
+    ) {
+        db.execSQL(
+            "INSERT INTO ${MovieContract.Companion.Entry.TABLE} (" +
                     "${MovieContract.Companion.Entry.TITLE}, " +
                     "${MovieContract.Companion.Entry.DESCRIPTION}," +
                     "${MovieContract.Companion.Entry.IMG_ID}," +
                     "${MovieContract.Companion.Entry.DURATION}," +
                     "${MovieContract.Companion.Entry.RELEASE_YEAR}," +
                     "${MovieContract.Companion.Entry.COUNTRY})" +
-                    "values ('${movie.title}','${movie.description}',${movie.imgResId},${movie.duration},${movie.releaseYear},'${movie.country}');")
-        }
+                    "values ('${movie.title}','${movie.description}',${movie.imgResId},${movie.duration},${movie.releaseYear},'${movie.country}');"
+        )
+    }
+
+    private fun insertCinema(
+        db: SQLiteDatabase,
+        it: Cinema,
+    ) {
+        db.execSQL(
+            "INSERT INTO ${CinemaContract.Entry.TABLE} (" +
+                    "${CinemaContract.Entry.NAME}," +
+                    "${CinemaContract.Entry.CITY}," +
+                    "${CinemaContract.Entry.LATITUDE}," +
+                    "${CinemaContract.Entry.LONGITUDE})" +
+                    "values ('${it.name}','${it.city}',${it.latitude},${it.longitude});"
+        )
     }
 
     private fun loadMovies(): MutableList<Movie> {
@@ -117,4 +178,19 @@ class DBOpenHelper private constructor(context: Context?):
         )
     }
 
+    private fun loadCinemas(): MutableList<Cinema> = mutableListOf(
+        Cinema(1, "Vialia", City.Malaga, 36.667715308, -4.502452023),
+        Cinema(2, "Plaza Mayor", City.Malaga, 36.6768, -4.50172),
+        Cinema(3, "Cinesa Diagonal", City.Madrid, 36.6768, -4.50172),
+        Cinema(4, "Capitol", City.Madrid, 40.42049093624055, -3.7065717490750165),
+        Cinema(5, "Cinemes Verdi", City.Barcelona, 41.40689588224367, 2.1564225855899086),
+        Cinema(6, "Cinemes Girona", City.Barcelona, 41.402260665343086, 2.165348976900318),
+        Cinema(7, "Codex Cinema", City.Lugo, 43.024218990433816, -7.566038413369055),
+        Cinema(8, "Yelmo As termas", City.Lugo, 43.03877476362686, -7.570244116967229),
+        Cinema(9, "Cinema NOS", City.Portugal, 38.7718093054458, -9.160708892144276),
+        Cinema(10, "Cinema NOS Palacio do Gelo", City.Portugal, 40.71263408423472, -7.88853821830642)
+    )
+
+    private fun getRandomCinemaId(): Int =
+        loadCinemas()[(0..<loadCinemas().size).random()].id
 }

@@ -28,7 +28,8 @@ class MovieViewHolder(view: View): ViewHolder(view), View.OnCreateContextMenuLis
         menuInfo: ContextMenu.ContextMenuInfo?
     ) {
         menu!!.setHeaderTitle(movie.title)
-        menu.add(this.adapterPosition, 0,0,"Eliminar")
-        menu.add(this.adapterPosition, 1, 1, "Editar")
+        menu.add(this.adapterPosition, 0,0,"Delete")
+        menu.add(this.adapterPosition, 1, 1, "Edit")
+        menu.add(this.adapterPosition, 2, 2, "Detail")
     }
 }

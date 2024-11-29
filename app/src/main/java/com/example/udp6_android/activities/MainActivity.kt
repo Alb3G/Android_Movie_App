@@ -94,10 +94,13 @@ class MainActivity : AppCompatActivity() {
 
         when(item.itemId) {
             0 -> {
-                snackBarDialog(modifiedMovie)
+                deleteMovie(modifiedMovie)
             }
             1 -> {
                 sendDataToEditableView(modifiedMovie, item)
+            }
+            2 -> {
+                sendDataToDetail(modifiedMovie)
             }
             else -> return super.onContextItemSelected(item)
         }
@@ -123,14 +126,14 @@ class MainActivity : AppCompatActivity() {
         intentLaunch.launch(intent)
     }
 
-    private fun removeOneMovie(modifiedMovie: Movie) {
+    private fun removeMovie(modifiedMovie: Movie) {
         movieList = movieList.filter { it != modifiedMovie }
         movieDao.delete(this, modifiedMovie)
         adapter.updateList(movieList)
         emptyList = movieList.isEmpty()
     }
 
-    private fun snackBarDialog(
+    private fun deleteMovie(
         modifiedMovie: Movie,
     ) {
         val dialog =
@@ -140,7 +143,7 @@ class MainActivity : AppCompatActivity() {
                     getString(R.string.accept_dialog_option)
                 ) { _, _ ->
                     display("Deleted ${modifiedMovie.title}")
-                    removeOneMovie(modifiedMovie)
+                    removeMovie(modifiedMovie)
                 }.create()
         dialog.show()
     }
@@ -161,7 +164,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onSelectedItem(movie: Movie) {
-        sendDataToDetail(movie)
+        val intent = Intent(this, MapsActivity::class.java)
+        intentLaunch.launch(intent)
     }
 
     private fun setUpSwipeRefresh() {

@@ -1,16 +1,15 @@
 package com.example.udp6_android.activities
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.example.udp6_android.R
-
+import com.example.udp6_android.databinding.ActivityMapsBinding
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.example.udp6_android.databinding.ActivityMapsBinding
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -42,8 +41,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap = googleMap
 
         // Add a marker in Sydney and move the camera
-        val sydney = LatLng(-34.0, 151.0)
-        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        val spain = LatLng(39.47838990715387, -3.6429804819125042)
+        mMap.addMarker(MarkerOptions().position(spain).title("Marker in Spain"))
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(spain))
+        mMap.uiSettings.isZoomControlsEnabled = true
     }
 }
