@@ -6,7 +6,7 @@ import com.example.udp6_android.DBOpenHelper
 import com.example.udp6_android.model.Movie
 import com.example.udp6_android.provider.MovieProvider
 
-class MovieDao(): DAO<Movie>  {
+class MovieDao: DAO<Movie>  {
     override fun findAll(context: Context?): MutableList<Movie> {
         lateinit var res:MutableList<Movie>
         lateinit var c: Cursor
@@ -15,10 +15,15 @@ class MovieDao(): DAO<Movie>  {
             val db = DBOpenHelper.getInstance(context)!!.readableDatabase
             val query = "SELECT * FROM Movie;"
             c = db.rawQuery(query, null)
-            res= mutableListOf()
-            while (c.moveToNext()) {
-                val nueva = Movie(c.getInt(0),c.getString(1),
-                    c.getString(2),c.getInt(3),c.getInt(4),c.getInt(5),
+            res = mutableListOf()
+            while(c.moveToNext()) {
+                val nueva = Movie(
+                    c.getInt(0),
+                    c.getString(1),
+                    c.getString(2),
+                    c.getInt(3),
+                    c.getInt(4),
+                    c.getInt(5),
                     c.getString(6)
                 )
                 res.add(nueva)

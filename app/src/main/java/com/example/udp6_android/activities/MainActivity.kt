@@ -165,6 +165,7 @@ class MainActivity : AppCompatActivity() {
 
     fun onSelectedItem(movie: Movie) {
         val intent = Intent(this, MapsActivity::class.java)
+        intent.putExtra("movie", movie)
         intentLaunch.launch(intent)
     }
 

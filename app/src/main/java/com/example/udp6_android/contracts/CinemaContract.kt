@@ -9,7 +9,7 @@ class CinemaContract {
             const val ID = "id"
             const val NAME = "name"
             const val CITY = "city"
-            const val LATITUDE = "latidude"
+            const val LATITUDE = "latitude"
             const val LONGITUDE = "longitude"
         }
     }

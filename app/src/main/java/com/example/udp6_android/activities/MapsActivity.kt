@@ -1,13 +1,17 @@
 package com.example.udp6_android.activities
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.udp6_android.R
+import com.example.udp6_android.dao.CinemaDAO
 import com.example.udp6_android.databinding.ActivityMapsBinding
+import com.example.udp6_android.model.Movie
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
@@ -15,6 +19,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
+    private lateinit var cameraPosition: CameraPosition
+    private val spain = LatLng(40.45049599256209, -4.1080792445398275)
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,11 +46,24 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-
-        // Add a marker in Sydney and move the camera
-        val spain = LatLng(39.47838990715387, -3.6429804819125042)
-        mMap.addMarker(MarkerOptions().position(spain).title("Marker in Spain"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(spain))
+        mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
         mMap.uiSettings.isZoomControlsEnabled = true
+        cameraPosition = CameraPosition.Builder().target(spain).zoom(5F).build()
+
+        val movie = intent.getSerializableExtra("movie", Movie::class.java)
+        this.title = "Where to watch ${movie?.title}?"
+
+        movie?.let {
+            val cinemaIds: List<Int> = CinemaDAO().getMovieCinemaRelations(this, it.id)
+            Log.d("Cinemas Id By Movie", "Size: ${cinemaIds.size}")
+            cinemaIds.forEach { id ->
+                Log.d("Cinema Id", "Id: $id")
+                val cinema = CinemaDAO().findById(this, id)
+                val latLng = LatLng(cinema.latitude, cinema.longitude)
+                mMap.addMarker(MarkerOptions().position(latLng).title(cinema.name))
+            }
+        }
+
+        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
     }
 }
