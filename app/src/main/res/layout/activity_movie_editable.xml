@@ -37,7 +37,7 @@
         app:layout_constraintStart_toStartOf="parent"
         tools:ignore="Autofill,LabelFor,SpeakableTextPresentCheck" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/editButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -45,14 +45,14 @@
         android:layout_marginTop="61dp"
         android:layout_marginEnd="30dp"
         android:layout_marginBottom="304dp"
-        android:backgroundTint="@color/green"
         android:text="@string/edit_button_detail_label"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/cancel_button"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/movieTitleDetail" />
+        app:layout_constraintTop_toBottomOf="@+id/movieTitleDetail"
+        style="@style/CustomButtonStyle" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/cancel_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -60,9 +60,9 @@
         android:layout_marginEnd="54dp"
         android:layout_marginBottom="304dp"
         android:text="@string/cancel_detail_button_label"
-        android:backgroundTint="@color/green"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/editButton"
-        app:layout_constraintTop_toBottomOf="@+id/movieTitleDetail" />
+        app:layout_constraintTop_toBottomOf="@+id/movieTitleDetail"
+        style="@style/CustomButtonStyle"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

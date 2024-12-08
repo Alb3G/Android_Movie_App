@@ -1,6 +1,23 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
     <style name="Base.Theme.UDP6_Android" parent="Theme.Material3.DayNight">
-        <!-- Customize your dark theme here. -->
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:strokeColor">@color/colorPrimary</item>
+        <item name="helperTextTextColor">@color/colorPrimary</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+    </style>
+
+    <style name="CustomButtonStyle" parent="Widget.Material3.Button">
+        <item name="android:backgroundTint">@color/colorPrimary</item>
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <style name="CustomOutlinedCard" parent="Widget.Material3.CardView.Outlined">
+        <item name="strokeColor">@color/colorPrimary</item>
+        <item name="cardBackgroundColor">@color/cardViewBackGround</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="TextAppearance" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textColor">@android:color/white</item>
     </style>
 </resources>

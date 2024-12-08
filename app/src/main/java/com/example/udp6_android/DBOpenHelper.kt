@@ -10,9 +10,9 @@ import com.example.udp6_android.model.Cinema
 import com.example.udp6_android.model.Movie
 import com.example.udp6_android.model.City
 
-class DBOpenHelper private constructor(context: Context?):
-    SQLiteOpenHelper(context, MovieContract.DB_NAME, null, MovieContract.VERSION)
-{
+class DBOpenHelper private constructor(
+    context: Context?
+): SQLiteOpenHelper(context, MovieContract.DB_NAME, null, MovieContract.VERSION) {
     companion object {
         private var dbOpen: DBOpenHelper? = null
         fun getInstance(context: Context?): DBOpenHelper? {
@@ -156,41 +156,37 @@ class DBOpenHelper private constructor(context: Context?):
     }
 
     private fun loadCinemas(): MutableList<Cinema> = mutableListOf(
-        Cinema(1, "Cine Vialia", City.Malaga, 36.667715308, -4.502452023),
-        Cinema(2, "Yelmo Plaza Mayor", City.Malaga, 36.6768, -4.50172),
-        Cinema(3, "Cinesa Diagonal", City.Madrid, 36.6768, -4.50172),
-        Cinema(4, "Capitol", City.Madrid, 40.42049093624055, -3.7065717490750165),
+        Cinema(1, "Cine Vialia", City.Malaga, 36.712041088693745, -4.433696489879524),
+        Cinema(2, "Yelmo Plaza Mayor", City.Malaga, 36.6570343624005, -4.479458003374459),
+        Cinema(3, "Cines Verdi", City.Madrid, 40.43669344061255, -3.704296878719535),
+        Cinema(4, "Capitol", City.Madrid, 40.4206016620782, -3.706560645554721),
         Cinema(5, "Cinemes Verdi", City.Barcelona, 41.40689588224367, 2.1564225855899086),
         Cinema(6, "Cinemes Girona", City.Barcelona, 41.402260665343086, 2.165348976900318),
         Cinema(7, "Codex Cinema", City.Lugo, 43.024218990433816, -7.566038413369055),
         Cinema(8, "Yelmo As termas", City.Lugo, 43.03877476362686, -7.570244116967229),
         Cinema(9, "Cinema NOS", City.Portugal, 38.7718093054458, -9.160708892144276),
         Cinema(10, "Cinema NOS Palacio do Gelo", City.Portugal, 40.71263408423472, -7.88853821830642),
-        Cinema(11, "Cinepolis La Cañada", City.Malaga, 36.517246, -4.872607),
-        Cinema(12, "Odeon Multicines Tres Cantos", City.Madrid, 40.604049, -3.708081),
-        Cinema(13, "Cines Filmax Gran Via", City.Barcelona, 41.358917, 2.097245),
-        Cinema(14, "Kinepolis Ciudad de la Imagen", City.Madrid, 40.418145, -3.786132),
-        Cinema(15, "Multicines Zamora", City.Zamora, 41.503027, -5.754551),
-        Cinema(16, "Cines Moderno", City.Sevilla, 37.392540, -5.994810),
-        Cinema(17, "Cines Almenara", City.Murcia, 37.649068, -1.698711),
-        Cinema(18, "Multicines 7", City.Bilbao, 43.26564477464586, -2.949996146743452),
-        Cinema(19, "Yelmo Premium Vallsur", City.Valladolid, 41.62363320813679, -4.750028968941341),
-        Cinema(20, "Cines Babel", City.Valencia, 39.465489, -0.374805)
+        Cinema(11, "Cinepolis La Cañada", City.Malaga, 36.52193146857712, -4.876636345708138),
+        Cinema(12, "Odeon Multicines Tres Cantos", City.Madrid, 40.59985454777887, -3.70862601671167),
+        Cinema(13, "Cines Filmax Gran Via", City.Barcelona, 41.35852327758783, 2.1284761679771993),
+        Cinema(14, "Kinepolis Ciudad de la Imagen", City.Madrid, 40.39403609451144, -3.79673781672014),
+        Cinema(15, "Multicines Zamora", City.Zamora, 41.51094395278755, -5.742651116673532),
+        Cinema(16, "Cines Moderno", City.Sevilla, 41.510951986852, -5.742586743659274),
+        Cinema(17, "Cines Almenara", City.Murcia, 37.63446879319063, -1.6989067168301681),
+        Cinema(18, "Multicines 7", City.Bilbao, 43.26164004600719, -2.945396362626624),
+        Cinema(19, "Yelmo Premium Vallsur", City.Valladolid, 41.62370401236042, -4.750093816668762),
+        Cinema(20, "Cines Babel", City.Valencia, 39.46988700500927, -0.3572719321006511)
     )
 
-    private fun getRandomCinemaId(): Int =
-        loadCinemas().random().id
+    private fun getRandomCinemaId(): Int = loadCinemas().random().id
 
     private fun movieCinemaManualInserts(db: SQLiteDatabase) {
         val movies = loadMovies()
+        val cinemasIds = loadCinemas().map { it.id }
         movies.forEach { movie ->
-            val selectedCinemas = mutableSetOf<Int>()
-            while (selectedCinemas.size < 5) {
-                val randId = getRandomCinemaId()
-                if (!selectedCinemas.contains(randId)) {
-                    db.execSQL("INSERT INTO Movie_Cinema(movie_id, cinema_id) values (${movie.id}, $randId);")
-                    selectedCinemas.add(randId)
-                }
+            val selectedCinemas = cinemasIds.shuffled().take(5)
+            selectedCinemas.forEach { cinemaId ->
+                db.execSQL("INSERT INTO Movie_Cinema(movie_id, cinema_id) values (${movie.id}, $cinemaId);")
             }
         }
     }

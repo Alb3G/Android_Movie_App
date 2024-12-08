@@ -2,5 +2,6 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="green">#BAFFBA</color>
+    <color name="cardViewBackGround">#212121</color>
+    <color name="colorPrimary">#6699CC</color>
 </resources>

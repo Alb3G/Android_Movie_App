@@ -17,7 +17,11 @@ class CinemaDAO: DAO<Cinema> {
         private const val INSERT_CINEMA = "INSERT INTO Cinema (name,city,latitude,longitude) values (?,?,?,?);"
         private const val UPDATE_CINEMA = "UPDATE Cinema SET name = ?, city = ?, latitude = ?, longitude = ? where id = ?;"
         private const val DELETE_CINEMA = "DELETE FROM Cinema where id = ?;"
-        private const val SELECT_MOVIE_CINEMA_RELATIONS = "SELECT * FROM Movie_Cinema where movie_id = ?;"
+        private const val SELECT_MOVIE_CINEMA_RELATIONS =
+                "SELECT c.id, c.name, c.city, c.latitude, c.longitude \n" +
+                "FROM Cinema as c\n" +
+                "JOIN Movie_Cinema as mc ON c.id = mc.cinema_id\n" +
+                "WHERE mc.movie_id = ?;"
     }
 
     override fun findAll(context: Context?): List<Cinema> {
@@ -104,16 +108,23 @@ class CinemaDAO: DAO<Cinema> {
         }
     }
 
-    fun getMovieCinemaRelations(context: Context?, id: Int): List<Int> {
-        val list: MutableList<Int> = mutableListOf()
+    fun getCinemasByMovieID(context: Context?, id: Int): List<Cinema> {
+        val cinemas: MutableList<Cinema> = mutableListOf()
         lateinit var db: SQLiteDatabase
         lateinit var c: Cursor
         try {
             db = DBOpenHelper.getInstance(context)!!.readableDatabase
             c = db.rawQuery(SELECT_MOVIE_CINEMA_RELATIONS, arrayOf(id.toString()))
             while(c.moveToNext()) {
-                list.add(c.getInt(1))
-                Log.d("Cinema ID", "cinema id: ${c.getInt(1)}")
+                cinemas.add(
+                    Cinema(
+                        c.getInt(0),
+                        c.getString(1),
+                        City.valueOf(c.getString(2)),
+                        c.getDouble(3),
+                        c.getDouble(4)
+                    )
+                )
             }
         } catch (e: Exception) {
             Log.e("RELATIONS Fail", e.message.toString())
@@ -122,7 +133,7 @@ class CinemaDAO: DAO<Cinema> {
             db.close()
         }
 
-        return list
+        return cinemas
     }
 
     fun findById(context: Context?, id: Int): Cinema {
@@ -132,7 +143,6 @@ class CinemaDAO: DAO<Cinema> {
         try {
             db = DBOpenHelper.getInstance(context)!!.readableDatabase
             c = db.rawQuery(SELECT_CINEMA_BY_ID, arrayOf(id.toString()))
-            Log.d("SQL Query", "Query: $SELECT_CINEMA_BY_ID, ID: $id")
             if(c.moveToNext()) {
                 cinema = Cinema(
                     c.getInt(0),

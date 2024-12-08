@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.udp6_android.R
 import com.example.udp6_android.dao.CinemaDAO
 import com.example.udp6_android.databinding.ActivityMapsBinding
+import com.example.udp6_android.model.Cinema
 import com.example.udp6_android.model.Movie
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -51,14 +52,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         cameraPosition = CameraPosition.Builder().target(spain).zoom(5F).build()
 
         val movie = intent.getSerializableExtra("movie", Movie::class.java)
-        this.title = "Where to watch ${movie?.title}?"
+        this.title = movie?.title
 
         movie?.let {
-            val cinemaIds: List<Int> = CinemaDAO().getMovieCinemaRelations(this, it.id)
-            Log.d("Cinemas Id By Movie", "Size: ${cinemaIds.size}")
-            cinemaIds.forEach { id ->
-                Log.d("Cinema Id", "Id: $id")
-                val cinema = CinemaDAO().findById(this, id)
+            val cinemas: List<Cinema> = CinemaDAO().getCinemasByMovieID(this, it.id)
+            Log.d("Cinemas Id By Movie", "Size: ${cinemas.size}")
+            cinemas.forEach { cinema ->
+                Log.d("Cinema Id", "Id: ${cinema.id}")
+                // Revisar con Logs las coordenadas, pueden dar problemas a la hora de crear el marcador.
                 val latLng = LatLng(cinema.latitude, cinema.longitude)
                 mMap.addMarker(MarkerOptions().position(latLng).title(cinema.name))
             }

@@ -5,7 +5,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.LoginActivity">
+    tools:context=".activities.LoginActivity"
+    style="@style/Base.Theme.UDP6_Android">
 
     <TextView
         android:id="@+id/login_title"
@@ -16,35 +17,36 @@
         android:layout_marginEnd="172dp"
         android:layout_marginBottom="15dp"
         android:text="@string/log_in"
-        android:textColor="@color/green"
-        android:textSize="34sp"
+        android:textSize="40sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/email_til"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.29000002" />
+        app:layout_constraintVertical_bias="0.29000002"
+        tools:ignore="TextContrastCheck" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/email_til"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="110dp"
+        android:layout_marginTop="30dp"
         android:layout_marginEnd="110dp"
         android:layout_marginBottom="10dp"
         app:helperText="@string/email_address"
-        app:helperTextTextColor="@color/green"
-        app:hintTextColor="@color/green"
         app:layout_constraintBottom_toTopOf="@+id/password_til"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/login_title">
+        app:layout_constraintTop_toBottomOf="@+id/login_title"
+        style="@style/Base.Theme.UDP6_Android">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/email_edt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/email" />
+            android:hint="@string/email"
+            tools:ignore="TextContrastCheck" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -55,35 +57,37 @@
         android:layout_marginEnd="110dp"
         android:layout_marginBottom="5dp"
         app:helperText="Password 8 characters"
-        app:helperTextTextColor="@color/green"
         app:endIconMode="password_toggle"
         app:layout_constraintBottom_toTopOf="@+id/remember_user_switch"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/email_til">
+        app:layout_constraintTop_toBottomOf="@+id/email_til"
+        style="@style/Base.Theme.UDP6_Android">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/password_edt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/password"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            tools:ignore="TextContrastCheck" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/remember_user_switch"
+        style="@style/Base.Theme.UDP6_Android"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="309dp"
         android:layout_marginEnd="55dp"
         android:text="@string/remember_user"
         android:textAlignment="textStart"
-        android:textColor="@color/green"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/password_til" />
+        app:layout_constraintTop_toBottomOf="@+id/password_til"
+        tools:ignore="TextContrastCheck" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/login_button"
@@ -92,12 +96,12 @@
         android:layout_marginStart="162dp"
         android:layout_marginTop="80dp"
         android:layout_marginEnd="162dp"
-        android:backgroundTint="@color/green"
         android:text="@string/log_in"
         android:textColor="@color/black"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/remember_user_switch"
-        tools:ignore="DuplicateSpeakableTextCheck" />
+        tools:ignore="DuplicateSpeakableTextCheck"
+        style="@style/CustomButtonStyle"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
