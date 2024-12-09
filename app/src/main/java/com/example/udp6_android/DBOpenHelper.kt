@@ -3,7 +3,6 @@ package com.example.udp6_android
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.util.Log
 import com.example.udp6_android.contracts.CinemaContract
 import com.example.udp6_android.contracts.MovieContract
 import com.example.udp6_android.model.Cinema
@@ -78,7 +77,6 @@ class DBOpenHelper private constructor(
                     "${MovieContract.Companion.Entry.COUNTRY})" +
                     "values ('${movie.title}','${movie.description}',${movie.imgResId},${movie.duration},${movie.releaseYear},'${movie.country}');"
         )
-        Log.d("Database", "Inserted Movie: ${movie.title}")
     }
 
     private fun insertCinema(
@@ -93,7 +91,6 @@ class DBOpenHelper private constructor(
                     "${CinemaContract.Entry.LONGITUDE})" +
                     "values ('${it.name}','${it.city}',${it.latitude},${it.longitude});"
         )
-        Log.d("DBOpenHelper", "Inserted Cinema: ${it.name}")
     }
 
     private fun loadMovies(): MutableList<Movie> {
