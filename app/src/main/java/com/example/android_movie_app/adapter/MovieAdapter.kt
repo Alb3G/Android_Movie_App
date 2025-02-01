@@ -1,0 +1,44 @@
+package com.example.android_movie_app.adapter
+
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
+import com.example.android_movie_app.model.Movie
+import com.example.android_movie_app.utils.MovieUtil
+import com.example.android_movie_app.viewHolder.MovieViewHolder
+import com.example.android_movie_app.R
+
+class MovieAdapter(
+    private var movieList: List<Movie>,
+    private val onClick: (Movie) -> Unit
+): RecyclerView.Adapter<MovieViewHolder>() {
+    fun updateList(newList: List<Movie>) {
+        val movieUtil = MovieUtil(movieList, newList)
+        val result = DiffUtil.calculateDiff(movieUtil)
+        movieList = newList
+        result.dispatchUpdatesTo(this)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
+        val layoutInflater = LayoutInflater.from(parent.context)
+        return MovieViewHolder(layoutInflater.inflate(R.layout.movie_item, parent, false))
+    }
+
+    override fun getItemCount(): Int {
+        return movieList.size
+    }
+
+    override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
+        val item = movieList[position]
+        holder.render(item, onClick)
+    }
+
+    fun setFilteredList(list: MutableList<Movie>) {
+        notifyItemRangeChanged(0, list.size)
+        movieList = list
+        notifyItemRangeChanged(0, list.size)
+    }
+
+    fun getMovies():List<Movie> = movieList
+}
