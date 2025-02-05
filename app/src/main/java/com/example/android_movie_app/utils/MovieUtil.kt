@@ -1,7 +1,7 @@
 package com.example.android_movie_app.utils
 
 import androidx.recyclerview.widget.DiffUtil
-import com.example.android_movie_app.model.Movie
+import com.example.android_movie_app.data.model.Movie
 
 class MovieUtil(
     private val oldList: List<Movie>,

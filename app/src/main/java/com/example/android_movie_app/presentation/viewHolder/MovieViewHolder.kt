@@ -1,14 +1,14 @@
-package com.example.android_movie_app.viewHolder
+package com.example.android_movie_app.presentation.viewHolder
 
 import android.view.ContextMenu
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
 import com.example.android_movie_app.databinding.MovieItemBinding
-import com.example.android_movie_app.model.Movie
+import com.example.android_movie_app.data.model.Movie
 
 class MovieViewHolder(view: View): ViewHolder(view), View.OnCreateContextMenuListener {
-    val binding = MovieItemBinding.bind(view)
+    private val binding = MovieItemBinding.bind(view)
     lateinit var movie: Movie
 
     fun render(item: Movie, onClick: (Movie) -> Unit) {

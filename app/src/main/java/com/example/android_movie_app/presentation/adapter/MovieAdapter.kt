@@ -1,13 +1,13 @@
-package com.example.android_movie_app.adapter
+package com.example.android_movie_app.presentation.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.example.android_movie_app.model.Movie
-import com.example.android_movie_app.utils.MovieUtil
-import com.example.android_movie_app.viewHolder.MovieViewHolder
 import com.example.android_movie_app.R
+import com.example.android_movie_app.data.model.Movie
+import com.example.android_movie_app.presentation.viewHolder.MovieViewHolder
+import com.example.android_movie_app.utils.MovieUtil
 
 class MovieAdapter(
     private var movieList: List<Movie>,

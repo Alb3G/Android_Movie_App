@@ -1,4 +1,4 @@
-package com.example.android_movie_app.activities
+package com.example.android_movie_app.presentation.activities
 
 import android.content.Intent
 import android.content.SharedPreferences
@@ -11,6 +11,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.android_movie_app.R
 import com.example.android_movie_app.databinding.ActivityLoginBinding
+import com.example.android_movie_app.presentation.activities.home.MainActivity
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding

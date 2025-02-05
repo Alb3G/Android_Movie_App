@@ -1,4 +1,4 @@
-package com.example.android_movie_app.activities
+package com.example.android_movie_app.presentation.activities
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -20,15 +20,19 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import com.example.android_movie_app.R
-import com.example.android_movie_app.dao.MovieDao
+import com.example.android_movie_app.data.local.AppDataBase
+import com.example.android_movie_app.data.local.repository.MovieRepository
 import com.example.android_movie_app.databinding.ActivityPictureBinding
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.properties.Delegates
 
+@Suppress("USELESS_ELVIS")
 class PictureActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPictureBinding
@@ -36,7 +40,7 @@ class PictureActivity : AppCompatActivity() {
     private lateinit var imageCapture: ImageCapture
     private lateinit var movieTitle: String
     private var id: Int by Delegates.notNull()
-    private val movieDao: MovieDao = MovieDao()
+    private val movieReporsitory: MovieRepository = MovieRepository(AppDataBase.getInstance(this).movieDAO())
 
     companion object {
         private const val TAG = "ExampleRVCV"
@@ -85,6 +89,7 @@ class PictureActivity : AppCompatActivity() {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
+    @SuppressLint("ObsoleteSdkInt")
     private fun takePicture() {
         val imageCapture = imageCapture ?: return
         val name = "${movieTitle}_" + SimpleDateFormat(FILENAME_FORMAT, Locale.US)
@@ -108,11 +113,15 @@ class PictureActivity : AppCompatActivity() {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                     val msg = "Snapshot done: ${outputFileResults.savedUri}"
                     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-                    val movie = movieDao.getMovieById(applicationContext, id)
-                    val res = movie.copy(
-                        uri = outputFileResults.savedUri.toString()
-                    )
-                    movieDao.update(applicationContext, res)
+                    lifecycleScope.launch {
+                        val movie = movieReporsitory.findById(id)
+                        val res = movie?.copy(
+                            uri = outputFileResults.savedUri.toString()
+                        )
+                        res?.let {
+                            movieReporsitory.update(it)
+                        }
+                    }
                 }
 
                 override fun onError(exception: ImageCaptureException) {

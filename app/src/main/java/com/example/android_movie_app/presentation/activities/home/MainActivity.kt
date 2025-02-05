@@ -1,4 +1,4 @@
-package com.example.android_movie_app.activities
+package com.example.android_movie_app.presentation.activities.home
 
 import android.content.Intent
 import android.os.Bundle
@@ -12,6 +12,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -20,20 +21,23 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.example.android_movie_app.R
-import com.example.android_movie_app.adapter.MovieAdapter
-import com.example.android_movie_app.dao.MovieDao
+import com.example.android_movie_app.data.model.Movie
 import com.example.android_movie_app.databinding.ActivityMainBinding
-import com.example.android_movie_app.model.Movie
+import com.example.android_movie_app.presentation.activities.MovieDetailActivity
+import com.example.android_movie_app.presentation.activities.MovieEditableActivity
+import com.example.android_movie_app.presentation.activities.PictureActivity
+import com.example.android_movie_app.presentation.activities.PreviewPictureActivity
+import com.example.android_movie_app.presentation.activities.mapsView.MapsActivity
+import com.example.android_movie_app.presentation.adapter.MovieAdapter
 import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var movieList: List<Movie>
     private lateinit var adapter: MovieAdapter
     private lateinit var layoutManager: LayoutManager
     private lateinit var intentLaunch: ActivityResultLauncher<Intent>
-    private lateinit var movieDao: MovieDao
+    private val viewModel: HomeViewModel by viewModels()
     private var emptyList: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,31 +50,27 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        this.title = getString(R.string.movies)
-        movieDao = MovieDao()
-        movieList = movieDao.findAll(this)
-        layoutManager = LinearLayoutManager(this)
-        binding.rvMovies.layoutManager = layoutManager
-        this.adapter = MovieAdapter(movieList) { onSelectedItem(it) }
-        binding.rvMovies.adapter = this.adapter
-        intentLaunch = registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) {
-            result: ActivityResult ->
-            if(result.resultCode == RESULT_OK) {
-                val movieTitle = result.data?.extras?.getString("title").toString()
-                val moviePosition = result.data?.extras?.getInt("moviePosition")
-                moviePosition?.let {
-                    adapter.getMovies()[it].title = movieTitle
-                    movieDao.update(this, adapter.getMovies()[it])
-                    this.adapter = MovieAdapter(movieList) { movie -> onSelectedItem(movie) }
-                    binding.rvMovies.adapter = this.adapter
-                }
-            }
-        }
-        binding.rvMovies.setHasFixedSize(true)
-        binding.rvMovies.itemAnimator = DefaultItemAnimator()
+        setupObservers()
+        setupUI()
+        setupActivityResultLauncher()
         setUpSwipeRefresh()
+
+        viewModel.loadMovies()
+    }
+
+    private fun setupUI() {
+        val movieList = viewModel.movies.value ?: emptyList()
+        this.title = getString(R.string.movies)
+
+        binding.rvMovies.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            setHasFixedSize(true)
+            itemAnimator = DefaultItemAnimator()
+        }
+
+        adapter = MovieAdapter(movieList) { onSelectedItem(it) }
+        binding.rvMovies.adapter = adapter
+
         this.onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 finish()
@@ -78,9 +78,32 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    private fun setupObservers() {
+        viewModel.movies.observe(this) { movieList ->
+            adapter.updateList(movieList)
+        }
+    }
+
+    private fun setupActivityResultLauncher() {
+        intentLaunch = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result: ActivityResult ->
+            if (result.resultCode == RESULT_OK) {
+                val movieTitle = result.data?.extras?.getString("title").toString()
+                val moviePosition = result.data?.extras?.getInt("moviePosition")
+
+                moviePosition?.let {
+                    val updatedMovie = adapter.getMovies()[it].copy(title = movieTitle)
+                    viewModel.updateMovie(updatedMovie)
+                }
+            }
+        }
+    }
+
     private fun filterList(newText: String?) {
         newText?.let { query ->
-            val filteredMovies = movieList.filter { movie ->
+            val movies = viewModel.movies.value ?: emptyList()
+            val filteredMovies = movies.filter { movie ->
                 movie.title.contains(query, ignoreCase = true)
             }
             if (filteredMovies.isEmpty()) {
@@ -139,8 +162,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun removeMovie(modifiedMovie: Movie) {
+        var movieList = viewModel.movies.value ?: emptyList()
         movieList = movieList.filter { it != modifiedMovie }
-        movieDao.delete(this, modifiedMovie)
+        viewModel.deleteMovie(modifiedMovie)
         adapter.updateList(movieList)
         emptyList = movieList.isEmpty()
     }
@@ -161,6 +185,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun snackBarDialog() {
+        val movieList = viewModel.movies.value ?: emptyList()
         val dialog =
             AlertDialog.Builder(this).setTitle("Eliminar All Movies")
                 .setMessage(
@@ -175,7 +200,7 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    fun onSelectedItem(movie: Movie) {
+    private fun onSelectedItem(movie: Movie) {
         val intent = Intent(this, MapsActivity::class.java)
         intent.putExtra("movie", movie)
         intentLaunch.launch(intent)
@@ -183,8 +208,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setUpSwipeRefresh() {
         binding.lySwipe.setOnRefreshListener {
-            movieList = movieDao.findAll(this)
-            adapter.updateList(movieList)
+            viewModel.loadMovies()
             binding.lySwipe.isRefreshing = false
         }
     }
@@ -217,13 +241,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun clearMovies() {
-        movieDao.deleteAll(this)
-        movieList = emptyList()
-        adapter.updateList(movieList)
+        viewModel.deleteAll()
+        adapter.updateList(emptyList())
     }
 
     private fun loadMovies() {
-        movieList = movieDao.findAll(this)
+        val movieList = viewModel.movies.value ?: emptyList()
+        viewModel.loadMovies()
         adapter.updateList(movieList)
     }
 

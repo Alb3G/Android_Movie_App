@@ -1,4 +1,4 @@
-package com.example.android_movie_app.activities
+package com.example.android_movie_app.presentation.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -10,7 +10,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.android_movie_app.R
 import com.example.android_movie_app.databinding.ActivityMovieDetailBinding
-import com.example.android_movie_app.model.Movie
+import com.example.android_movie_app.data.model.Movie
 
 class MovieDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMovieDetailBinding
@@ -43,7 +43,7 @@ class MovieDetailActivity : AppCompatActivity() {
         durationTv: TextView,
         countryTv: TextView
     ) {
-        val movie = intent.getSerializableExtra("movie", Movie::class.java)
+        val movie = intent.getParcelableExtra("movie", Movie::class.java)
         this.title = movie?.title
         titleTv.text = movie?.title
         movieImg.setImageResource(movie!!.imgResId)

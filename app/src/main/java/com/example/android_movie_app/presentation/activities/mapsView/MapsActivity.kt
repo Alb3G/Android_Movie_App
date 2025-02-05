@@ -1,12 +1,11 @@
-package com.example.android_movie_app.activities
+package com.example.android_movie_app.presentation.activities.mapsView
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.android_movie_app.R
-import com.example.android_movie_app.dao.CinemaDAO
+import com.example.android_movie_app.data.model.Movie
 import com.example.android_movie_app.databinding.ActivityMapsBinding
-import com.example.android_movie_app.model.Cinema
-import com.example.android_movie_app.model.Movie
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -20,6 +19,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
     private lateinit var cameraPosition: CameraPosition
+    private val viewModel: MapsViewModel by viewModels()
     private val spain = LatLng(40.45049599256209, -4.1080792445398275)
 
 
@@ -41,14 +41,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap.uiSettings.isZoomControlsEnabled = true
         cameraPosition = CameraPosition.Builder().target(spain).zoom(5F).build()
 
-        val movie = intent.getSerializableExtra("movie", Movie::class.java)
-        this.title = movie?.title
+        val movie = intent.getParcelableExtra("movie", Movie::class.java)
+        this.title = movie?.title ?: "No movie selected"
 
         movie?.let {
-            val cinemas: List<Cinema> = CinemaDAO().getCinemasByMovieID(this, it.id)
-            cinemas.forEach { cinema ->
-                val latLng = LatLng(cinema.latitude, cinema.longitude)
-                mMap.addMarker(MarkerOptions().position(latLng).title(cinema.name))
+            viewModel.getCinemasByMovieId(it.id)
+            viewModel.cinemas.observe(this) { cinemas ->
+                cinemas.forEach { cinema ->
+                    val latLng = LatLng(cinema.latitude, cinema.longitude)
+                    mMap.addMarker(MarkerOptions().position(latLng).title(cinema.name))
+                }
             }
         }
 
