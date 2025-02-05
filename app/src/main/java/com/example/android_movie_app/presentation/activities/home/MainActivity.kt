@@ -81,6 +81,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupObservers() {
         viewModel.movies.observe(this) { movieList ->
             adapter.updateList(movieList)
+            viewModel.loadMovies()
         }
     }
 
